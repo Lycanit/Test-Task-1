@@ -1,6 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IHandlerProvider, HandlerProvider>();
+builder.Services.RegisterHandlers();
 
 var app = builder.Build();
 

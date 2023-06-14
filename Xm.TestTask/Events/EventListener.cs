@@ -3,10 +3,12 @@
     public class EventListener
     {
         private readonly IEventBus _eventBus;
+        private readonly IHandlerProvider _handlerProvider;
 
-        public EventListener(IEventBus eventBus)
+        public EventListener(IEventBus eventBus, IHandlerProvider handlerProvider)
         {
             _eventBus = eventBus;
+            _handlerProvider = handlerProvider;
         }
 
         public void StartListening()
@@ -15,7 +17,16 @@
             {
                 await foreach (var @event in _eventBus.ListenAsync())
                 {
-                    // todo: handle
+                    try
+                    {
+                        var handler = _handlerProvider.Provide(@event.DataType);
+                        handler.Handle(@event.Body);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
                 }
             });
         }
